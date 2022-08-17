@@ -83,16 +83,17 @@ async function printPages(){
 											break;
 				case "to_do":		html+= '<label>' + await convert.listItemToHTML(cur_result.to_do) +'</label>'
 											break;
-				case "table":		console.log(cur_result.table)
-									let children = await getChildren(cur_result)
-									console.log(children.results[0].table_row)
+				case "table":		let children = await getChildren(cur_result)
+									let table = await convert.tableToHTML(children.results,cur_result.table.table_width)
+									console.log(table)
+									html+=table
 
-									
+
 
 			}
     	}
   	}
-	  //confluence(html,names[i])
+	  confluence(html,names[i])
 }
 //console.log(html)
 

@@ -13,6 +13,7 @@ async function postContent(content,title){
              let version = parseInt(data.results[0].version.number)+1
              id=data.results[0].id
             console.log("Called Put. Version:"+version)
+            if(title=='Graph')console.log(data.results[0].body)
             confluence.putContent("~62fa5a65eec8d4a478d3c534",id,version,title,content,function(err,data){
             console.log(err)
      })}

@@ -9,32 +9,55 @@ const notion = new Client({
   })
 
 
-async function getDatabase(){
+async function getDatabase(id){
     const db = await notion.databases.query({
-        database_id : process.env.NOTION_DATABASE_ID,
+        database_id : id
         
     })
     return db
   }
 
-
-async function getPages(){
-    const db = await getDatabase()
-    let pages = []
-	let names = []
-    for(let i=0;i<db.results.length;i++){
-      pages[i] = await notion.blocks.children.list({
-      block_id: db.results[i].id
-    })
-	let str = db.results[i].url.substring(22).split("-")
+  async function getName(url){
+	let str = url.substring(22).split("-")
   	let name = str[0]
   	if(str.length>2)
 	for(let j=1;j<str.length-1;j++)
 		name+=" "+str[j]
-  	names[i] = name
-  	//console.log(names[i])
-  	}
-  return {pages,names}
+	return name
+  }
+
+async function getPages(urlfull){
+	url = urlfull.substring(22)
+	let pages = []
+	let names = []
+	if(url.includes("?v=")){
+		let id = url.split('?')[0]
+		console.log(id)
+		const db = await getDatabase(id)
+		
+		for(let i=0;i<db.results.length;i++){
+			console.log(db.results[i].id)
+		pages[i] = await notion.blocks.children.list({
+		block_id: db.results[i].id
+		})
+		names[i] = await getName(db.results[i].url)
+		//console.log(names[i])
+		}
+	}
+	else{
+		let str = url.split('-');
+		let s= str[str.length-1]
+		let id = s.substring(0,8)+'-'+s.substring(8,12)+'-'+s.substring(12,16)+'-'+s.substring(16,20)+'-'+s.substring(20)
+		console.log(id)
+		pages[0] = await notion.blocks.children.list({
+				block_id: id
+		})
+		names[0]=await getName(urlfull)
+
+	}
+	
+	return {pages,names}
+  
 }
 
 
@@ -46,8 +69,8 @@ async function getChildren(page){
 }
 
 
-async function printPages(){
-  const {pages,names} = await getPages()
+async function printPages(url){
+  const {pages,names} = await getPages(url)
   let html =""
   for(let i=0;i<pages.length;i++){
 	console.log(names[i])
@@ -60,10 +83,10 @@ async function printPages(){
 		if(cur_result.hasOwnProperty('type')){
 			let type = cur_result.type;
 			switch(type){
-				case "paragraph": 	html+= '<p>'+await convert.paragraphToHTML(cur_result.paragraph)+'</p>'
+				case "paragraph": 	if(names[i]=="Page 1")
+									html+= '<p>'+await convert.paragraphToHTML(cur_result.paragraph)+'</p>'
 									break 
-				case "code": 		cur_result.code.rich_text[0].annotations.code=true
-									html+= '<p>'+await convert.paragraphToHTML(cur_result.code)+'</p>'
+				case "code": 		html+= await convert.codeToHTML(cur_result.code) 
 									break
 				case "heading_1":   html+= '<h1>' + await convert.paragraphToHTML(cur_result.heading_1) +"</h1>"
 									break
@@ -85,9 +108,11 @@ async function printPages(){
 											break;
 				case "table":		let children = await getChildren(cur_result)
 									let table = await convert.tableToHTML(children.results,cur_result.table.table_width)
-									console.log(table)
 									html+=table
-
+									break
+				case "equation":	html+='<math>'+await convert.paragraphToHTML(cur_result.equation)+'</math>'
+									break 
+				
 
 
 			}
@@ -95,9 +120,7 @@ async function printPages(){
   	}
 	  confluence(html,names[i])
 }
-//console.log(html)
+
 
 }
-//getDatabase()
-//printPageContent()
-printPages()
+module.exports=printPages

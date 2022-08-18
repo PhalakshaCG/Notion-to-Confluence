@@ -1,0 +1,24 @@
+{
+   "action": {
+      "default_icon": "logo.png"
+   },
+   "content_scripts": [ {
+      "css": [ ],
+      "js": [ "button.js" ],
+      "matches": [ "https://www.notion.so/*" ],
+      "run_at": "document_start"
+   } ],
+   "description": "Convert notion files to confluence",
+   "icons": {
+      "128": "logo.png",
+      "16": "logo.png",
+      "96": "logo.png",
+      "48": "logo.png"
+   },
+   "manifest_version": 3,
+   "name": "N2C",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.0.6",
+   "permissions": [
+    ]
+}

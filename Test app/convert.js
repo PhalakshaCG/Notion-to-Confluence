@@ -1,23 +1,26 @@
 async function getStyling(cur_result){
     let para = cur_result
 	let text =""
-	for(rt of para.rich_text)
-		text+=rt.plain_text
-	if(para.rich_text[0]!=undefined){
-		let a = para.rich_text[0].annotations
+    let cur_text=""
+	for(rt of para.rich_text){
+        cur_text=rt.plain_text
+	if(rt!=undefined){
+		let a = rt.annotations
 		if(a.bold==true)
-			text="<strong>"+text+"</strong>"
+        cur_text="<strong>"+cur_text+"</strong>"
 		if(a.italic==true)
-			text="<i>"+text+"</i>"
+        cur_text="<i>"+cur_text+"</i>"
 		if(a.strikethrough==true)
-			text="<s>"+text+"</s>"
+        cur_text="<s>"+cur_text+"</s>"
 		if(a.underline==true)
-			text="<u>"+text+"</u>"
+        cur_text="<u>"+cur_text+"</u>"
 		if(a.code==true)
-			text="<code>"+text+"</code>"
+        cur_text="<code>"+cur_text+"</code>"
+        if(a.color!='default')
+        cur_text = '<span style="color:'+cur_text+';">'+text+'</span>'
 	}
-	if(para.color!='default')
-		text = '<span style="color:'+para.color+';">'+text+'</span>'
+	text+=cur_text
+    }
     return text;
 }
 async function getStylingTable(cur_result){
@@ -25,7 +28,6 @@ async function getStylingTable(cur_result){
     if(para==undefined)
     return ""
 	let text =""
-    console.log(para)
     text+=para.plain_text
 
     let a = para.annotations
@@ -50,7 +52,14 @@ async function paragraphToHTML(cur_result){
 	return text
 }
 
-
+async function codeToHTML(cur_result){
+    let text =""
+    for(rt of cur_result.rich_text)
+    text+=rt.plain_text
+    let res =  '<ac:structured-macro ac:name="code" ac:schema-version="1" ac:macro-id="13054c9d-d99d-4660-84e7-88d28e4c1f8f">'+
+    '<ac:plain-text-body><![CDATA[aasdsd\n' + text+']]></ac:plain-text-body></ac:structured-macro>'
+    return res
+}
 
 async function listItemToHTML(cur_result){
     let text = await getStyling(cur_result) 
@@ -90,5 +99,6 @@ async function tableToHTML(table_rows,r_n){
 module.exports ={
     paragraphToHTML,
     listItemToHTML,
-    tableToHTML
+    tableToHTML,
+    codeToHTML
 }

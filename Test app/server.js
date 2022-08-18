@@ -3,14 +3,13 @@ const fs = require('fs')
 const notion = require('./notion')
 const express = require('express')
 const confluence = require('./confluence')
-
-
-
 const app = express()
 app.listen(process.env.PORT)
 app.get('/',(req,res)=>{
-  res.send("Hello world")
-  res.send(s)
+  notion(req.headers.url)
+  //let jsoN = JSON.stringify(req)
+  //console.log(req.headers.url)
+  res.send("Done")
 })
 
 // const Client = require('@notionhq/client')

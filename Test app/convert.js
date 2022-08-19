@@ -17,7 +17,7 @@ async function getStyling(cur_result){
 		if(a.code==true)
         cur_text="<code>"+cur_text+"</code>"
         if(a.color!='default')
-        cur_text = '<span style="color:'+cur_text+';">'+text+'</span>'
+        cur_text = '<span style="color:'+a.color+';">'+cur_text+'</span>'
 	}
 	text+=cur_text
     }
@@ -29,7 +29,6 @@ async function getStylingTable(cur_result){
     return ""
 	let text =""
     text+=para.plain_text
-
     let a = para.annotations
     if(a.bold==true)
         text="<strong>"+text+"</strong>"
@@ -100,5 +99,6 @@ module.exports ={
     paragraphToHTML,
     listItemToHTML,
     tableToHTML,
-    codeToHTML
+    codeToHTML,
+    getStylingTable
 }

@@ -132,8 +132,28 @@ async function printPages(url,callback){
 									break 
 				case "bulleted_list_item" : html+='<ul><li>'+await convert.paragraphToHTML(cur_result.bulleted_list_item)+'</li></ul>'
 									break
-				default: console.log(cur_result.type)
-
+				case "quote":		if(cur_result[type].rich_text!=undefined){
+										html+='<blockquote>'
+										for(var i1=0;i1<cur_result[type].rich_text.length;i1++)
+										html+=cur_result[type].rich_text[i1].plain_text;
+										html+="</blockquote><br/>"
+									}
+									break
+				case "divider":		html+="<hr/>"
+									break
+				case "callout":		if(cur_result[type].rich_text!=undefined){
+										html+='<code>'
+										html+=cur_result[type].icon.emoji+cur_result[type].rich_text[0].plain_text;
+										html+="</code><br/>"
+									}
+									break;
+				default:         	
+									if(cur_result[type].rich_text!=undefined){
+										html+='<p>'
+										for(var i1=0;i1<cur_result[type].rich_text.length;i1++)
+										html+=cur_result[type].rich_text[i1].plain_text;
+										html+="</p><br/>"
+									}
 
 			}
     	}

@@ -40,6 +40,7 @@ request
 function uploadContentToPage(content,title,spaceKey){
     confluence.getContentByPageTitle(spaceKey, title,function(err, data) {
         if(data.results!=undefined&&data.results[0]){
+          //console.log(data.results[0].body.storage)
             let version = parseInt(data.results[0].version.number)+1
             id=data.results[0].id
             console.log("Called Put. Version:"+version)

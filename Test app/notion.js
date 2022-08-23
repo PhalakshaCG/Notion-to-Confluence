@@ -14,6 +14,7 @@ async function getDatabase(id){
         database_id : id
         
     })
+	//console.log(db.results)
     return db
   }
 
@@ -44,17 +45,6 @@ async function getDatabase(id){
 	name+=" "+str[i]
 	return name
   }
-  async function getPageNameFromID(id){
-	let page = await notion.pages.retrieve({
-		page_id:id
-	})
-	let url = page.url
-	let str = url.substring(22).split("-")
-  	let name=str[0]
-	for(let i=1;i<str.length-1;i++)
-	name+=" "+str[i]
-	return name
-  }
 async function getPages(urlfull){
 	url = urlfull.substring(22)
 	let pages = []
@@ -70,7 +60,7 @@ async function getPages(urlfull){
 			pages[i] = await notion.blocks.children.list({
 			block_id: db.results[i].id
 		})
-		names[i] = await getPageNameFromID(pages[i].results[i].parent.page_id)
+		names[i] = await getPageName(db.results[i].url)
 		console.log(names[i])
 		}
 	}
